@@ -18,7 +18,57 @@ public class TpCommand implements CommandExecutor {
 
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!(sender instanceof Player)) {
-            return false;
+
+            //Console
+            if (plugin.getServer().getOnlinePlayers().stream().findFirst().isPresent()) {
+
+                Player playerFound = plugin.getServer().getOnlinePlayers().stream().findFirst().get();
+
+                switch (args.length) {
+                    case (2):
+
+                        //If is the same player
+                        if(args[0].toLowerCase().equals(args[1].toLowerCase())) {
+                            return false;
+                        }
+
+                        // tp <player> <player2>
+                        new BukkitPluginChannel(plugin, playerFound, new Object[]{"MaSuiteTeleports", "TeleportForceTo", "console", "TeleportTargetToTarget", args[0], args[1]}).send();
+                        break;
+                    case (4):
+
+                        if (Double.isNaN(parse(args[1], 0)) && Double.isNaN(parse(args[2], 0)) && Double.isNaN(parse(args[3], 0))) {
+                            return false;
+                        }
+
+                        // tp <player> <x> <y> <z>
+                        new BukkitPluginChannel(plugin, playerFound, new Object[]{"MaSuiteTeleports", "TeleportForceTo", playerFound.getName(), "TeleportToXYZ",
+                                args[0],
+                                parse(args[1], playerFound.getLocation().getX()),
+                                parse(args[2], playerFound.getLocation().getY()),
+                                parse(args[3], playerFound.getLocation().getZ())}).send();
+                        break;
+                    case (5):
+                        // TpCommand target to location
+                        if (Double.isNaN(parse(args[2], 0)) && Double.isNaN(parse(args[3], 0)) && Double.isNaN(parse(args[4], 0))) {
+                            return false;
+                        }
+
+                        // tp <player> <world> <x> <y> <z>
+                        new BukkitPluginChannel(plugin, playerFound, new Object[]{"MaSuiteTeleports", "TeleportForceTo", playerFound.getName(), "TeleportToCoordinates",
+                                args[0],
+                                args[1],
+                                parse(args[2], playerFound.getLocation().getX()),
+                                parse(args[3], playerFound.getLocation().getY()),
+                                parse(args[4], playerFound.getLocation().getZ())}).send();
+                        break;
+                    default:
+                        break;
+                }
+
+            }
+
+            return true;
         }
 
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
@@ -57,6 +107,20 @@ public class TpCommand implements CommandExecutor {
                             parse(args[2], p.getLocation().getZ())}).send();
                     break;
                 case (4):
+
+                    // tp <x> <y> <z> <world>
+                    if(!Double.isNaN(parse(args[0], 0)) && !Double.isNaN(parse(args[1], 0)) && !Double.isNaN(parse(args[2], 0))) {
+                        if (Bukkit.getWorlds().stream().anyMatch(world -> world.getName().equals(args[3]))) {
+                            new BukkitPluginChannel(plugin, p, new Object[]{"MaSuiteTeleports", "TeleportForceTo", sender.getName(), "TeleportToCoordinates",
+                                    sender.getName(),
+                                    args[3],
+                                    parse(args[0], p.getLocation().getX()),
+                                    parse(args[1], p.getLocation().getY()),
+                                    parse(args[2], p.getLocation().getZ())}).send();
+                            break;
+                        }
+                    }
+
                     if (Double.isNaN(parse(args[1], 0)) && Double.isNaN(parse(args[2], 0)) && Double.isNaN(parse(args[3], 0))) {
                         return;
                     }
@@ -74,9 +138,9 @@ public class TpCommand implements CommandExecutor {
                     // If not, send target to XYZ
                     new BukkitPluginChannel(plugin, p, new Object[]{"MaSuiteTeleports", "TeleportForceTo", sender.getName(), "TeleportToXYZ",
                             args[0],
-                            parse(args[0], p.getLocation().getX()),
-                            parse(args[1], p.getLocation().getY()),
-                            parse(args[2], p.getLocation().getZ())}).send();
+                            parse(args[1], p.getLocation().getX()),
+                            parse(args[2], p.getLocation().getY()),
+                            parse(args[3], p.getLocation().getZ())}).send();
                     break;
                 case (5):
                     // TpCommand target to location
