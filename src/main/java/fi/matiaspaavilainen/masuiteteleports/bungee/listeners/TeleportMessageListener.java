@@ -198,7 +198,6 @@ public class TeleportMessageListener implements Listener {
                     plugin.formator.sendMessage(sender, plugin.config.load("teleports", "messages.yml").getString("back.no-loc"));
                 }
             }
-
         }
     }
 

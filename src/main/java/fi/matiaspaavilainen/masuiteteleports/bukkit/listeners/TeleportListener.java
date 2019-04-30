@@ -6,6 +6,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.PluginMessageListener;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
@@ -69,7 +71,13 @@ public class TeleportListener implements PluginMessageListener {
                     String server = in.readUTF();
                     Location loc = p.getLocation();
                     new BukkitPluginChannel(plugin, p, new Object[]{"MaSuiteTeleports", "GetLocation", p.getName(), loc.getWorld().getName() + ":" + loc.getX() + ":" + loc.getY() + ":" + loc.getZ() + ":" + loc.getYaw() + ":" + loc.getPitch(), server}).send();
-
+                }
+                if (method.equals("Invu")) {
+                    Player p = Bukkit.getPlayer(in.readUTF());
+                    if (p == null) {
+                        return;
+                    }
+                    player.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 100, 100, false, false));
                 }
             }
         } catch (IOException e) {
